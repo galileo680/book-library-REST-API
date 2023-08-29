@@ -3,10 +3,14 @@ const bodyParser = require('body-parser');
 
 const sequelize = require('./util/database');
 
+const bookRoutes = require('./routes/bookRoutes');
+
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use('/api', bookRoutes);
 
 sequelize
   //.sync({ force: true })
