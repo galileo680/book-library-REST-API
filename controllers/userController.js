@@ -18,7 +18,7 @@ const userController = {
     const password = req.body.password;
 
     try {
-      const hashedPw = await bcryptjs.hash(password, 12);
+      const hashedPw = await bcrypt.hash(password, 12);
 
       const user = await User.create({
         username: username,
@@ -41,7 +41,7 @@ const userController = {
   login: async (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
-    let loadedUser;
+
     try {
       const user = await User.findOne({ where: { username: username } });
 
@@ -77,3 +77,5 @@ const userController = {
     }
   },
 };
+
+module.exports = userController;
