@@ -7,17 +7,17 @@ const User = require('../models/userModel');
 const userController = {
   signup: async (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      const error = new Error('Validation failed.');
-      error.statusCode = 422;
-      error.data = errors.array();
-      throw error;
-    }
-    const username = req.body.username;
-    const email = req.body.email;
-    const password = req.body.password;
-
     try {
+      if (!errors.isEmpty()) {
+        const error = new Error('Validation failed.');
+        error.statusCode = 422;
+        error.data = errors.array();
+        throw error;
+      }
+      const username = req.body.username;
+      const email = req.body.email;
+      const password = req.body.password;
+
       const hashedPw = await bcrypt.hash(password, 12);
 
       const user = await User.create({
@@ -29,13 +29,11 @@ const userController = {
       res.status(201).json({
         message: 'User created!',
       });
-    } catch (err) {
-      console.log(err);
-      if (!err.statusCode) {
-        res.status(500).json({ error: 'Internal server error' });
-      } else {
-        res.status(err.statusCode).json({ error: err.message });
+    } catch (error) {
+      if (!error.statusCode) {
+        error.statusCode = 500;
       }
+      next(error);
     }
   },
   login: async (req, res, next) => {
@@ -68,12 +66,10 @@ const userController = {
       );
       res.status(200).json({ token: token, userId: user.id.toString() });
     } catch (err) {
-      console.log(err);
       if (!err.statusCode) {
-        res.status(500).json({ error: 'Internal server error' });
-      } else {
-        res.status(err.statusCode).json({ error: err.message });
+        err.statusCode = 500;
       }
+      next(err);
     }
   },
 };
