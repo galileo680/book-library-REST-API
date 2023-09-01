@@ -1,3 +1,4 @@
+const { validationResult } = require('express-validator');
 const Book = require('../models/bookModel');
 
 const bookController = {
@@ -10,12 +11,10 @@ const bookController = {
         books: books,
       });
     } catch (err) {
-      console.log(err);
       if (!err.statusCode) {
-        res.status(500).json({ error: 'Internal server error' });
-      } else {
-        res.status(err.statusCode).json({ error: err.message });
+        err.statusCode = 500;
       }
+      next(err);
     }
   },
   postAddBook: async (req, res, next) => {
@@ -25,6 +24,12 @@ const bookController = {
     const publicationYear = req.body.publicationYear;
 
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const error = new Error('Entered data is incorrect.');
+        error.statusCode = 422;
+        throw error;
+      }
       const book = await Book.create({
         title: title,
         author: author,
@@ -36,12 +41,10 @@ const bookController = {
         book: book,
       });
     } catch (err) {
-      console.log(err);
       if (!err.statusCode) {
-        res.status(500).json({ error: 'Internal server error' });
-      } else {
-        res.status(err.statusCode).json({ error: err.message });
+        err.statusCode = 500;
       }
+      next(err);
     }
   },
   putUpdateBook: async (req, res, next) => {
@@ -53,6 +56,13 @@ const bookController = {
     const publicationYear = req.body.publicationYear;
 
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        const error = new Error('Entered data is incorrect.');
+        error.statusCode = 422;
+        throw error;
+      }
+
       const book = await Book.findAll({
         where: {
           id: bookId,
@@ -78,12 +88,10 @@ const bookController = {
       );
       res.status(200).json({ message: 'Book updated!', book: result });
     } catch (err) {
-      console.log(err);
       if (!err.statusCode) {
-        res.status(500).json({ error: 'Internal server error' });
-      } else {
-        res.status(err.statusCode).json({ error: err.message });
+        err.statusCode = 500;
       }
+      next(err);
     }
   },
   deleteBook: async (req, res, next) => {
@@ -105,12 +113,10 @@ const bookController = {
       const result = await Book.destroy({ where: { id: bookId } });
       res.status(200).json({ message: 'Book deleted!', book: result });
     } catch (err) {
-      console.log(err);
       if (!err.statusCode) {
-        res.status(500).json({ error: 'Internal server error' });
-      } else {
-        res.status(err.statusCode).json({ error: err.message });
+        err.statusCode = 500;
       }
+      next(err);
     }
   },
 };
