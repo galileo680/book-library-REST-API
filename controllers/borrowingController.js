@@ -50,10 +50,34 @@ const borrowingController = {
     }
   },
   returnBook: async (req, res, next) => {
-    const bookId = req.params.bookId;
+    const bookId = req.body.bookId;
     const userId = req.userId;
 
     try {
+      const bookToReturn = await Borrowing.findOne({
+        where: {
+          BookId: bookId,
+          UserId: userId,
+          returnedDate: null,
+        },
+      });
+
+      if (!bookToReturn) {
+        const error = new Error(`Can't return this book!`);
+        error.statusCode = 400;
+        throw error;
+      }
+
+      const currentDate = new Date()
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' ');
+
+      bookToReturn.update({
+        returnedDate: currentDate,
+      });
+
+      res.status(200).json({ message: 'Book returned!' });
     } catch (err) {
       if (!err.statusCode) {
         err.statusCode = 500;

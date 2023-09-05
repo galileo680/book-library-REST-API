@@ -5,10 +5,10 @@ const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
-// /api/borrowing => POST
+// /api/borrow => POST
 router.post('/borrow', isAuth, borrowingController.borrowBook);
 
-// /api/borrowing/:bookId => POST
-//router.post('/return', isAuth, borrowingController.returnBook);
+// /api/return => POST
+router.post('/return', isAuth, borrowingController.returnBook);
 
 module.exports = router;
