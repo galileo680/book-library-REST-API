@@ -60,11 +60,13 @@ const userController = {
         {
           email: user.email,
           username: user.username,
+          userId: user.id.toString(),
         },
         'secret',
         { expiresIn: '1h' }
       );
-      res.status(200).json({ token: token, userId: user.id.toString() });
+      // res.status(200).json({ token: token, userId: user.id.toString() });
+      res.status(200).json({ token: token });
     } catch (err) {
       if (!err.statusCode) {
         err.statusCode = 500;
