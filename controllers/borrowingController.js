@@ -85,8 +85,65 @@ const borrowingController = {
       next(err);
     }
   },
-  getBorrowedBooksForUser: async (req, res, next) => {},
-  getAllBorrowedBooks: async (req, res, next) => {},
+  getBorrowedBooksForUser: async (req, res, next) => {
+    const userId = req.userId;
+
+    try {
+      const userBooks = await Borrowing.findAll({
+        where: { UserId: userId, returnedDate: null },
+      });
+
+      if (!userBooks) {
+        res
+          .status(200)
+          .json({ message: 'No book is currently borrowed by user' });
+      }
+
+      console.log(userBooks);
+      res.status(200).json({
+        message: 'Fetched user books successfully.',
+        userBooks: userBooks,
+      });
+    } catch (err) {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    }
+  },
+  getAllBorrowedBooks: async (req, res, next) => {
+    try {
+      const borrowedBooks = await Borrowing.findAll({
+        where: { returnedDate: null },
+      });
+
+      if (!borrowedBooks) {
+        res.status(200).json({ message: 'No book is currently borrowed' });
+      }
+
+      const borrowedBooksIds = borrowedBooks.map((Borrowing) => {
+        return Borrowing['dataValues'].BookId;
+      });
+
+      const books = await Book.findAll({
+        where: {
+          id: {
+            [Sequelize.Op.in]: borrowedBooksIds,
+          },
+        },
+      });
+
+      res.status(200).json({
+        message: 'Fetched borrowed books successfully.',
+        books: books,
+      });
+    } catch (err) {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    }
+  },
 };
 
 module.exports = borrowingController;

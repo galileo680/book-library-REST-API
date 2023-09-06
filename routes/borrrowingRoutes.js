@@ -11,4 +11,10 @@ router.post('/borrow', isAuth, borrowingController.borrowBook);
 // /api/return => POST
 router.post('/return', isAuth, borrowingController.returnBook);
 
+// /api/user-books => GET
+router.get('/user-books', isAuth, borrowingController.getBorrowedBooksForUser);
+
+// /api/borrowed-books => GET
+router.get('/borrowed-books', isAuth, borrowingController.getAllBorrowedBooks);
+
 module.exports = router;
