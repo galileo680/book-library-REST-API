@@ -1,7 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const nodemailer = require('nodemailer');
+const schedule = require('node-schedule');
+require('dotenv').config();
 
 const sequelize = require('./util/database');
+const email = require('./util/email');
 
 const bookRoutes = require('./routes/bookRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -32,6 +36,25 @@ User.hasMany(Borrowing);
 Book.hasMany(Borrowing);
 Borrowing.belongsTo(User);
 Borrowing.belongsTo(Book);
+
+const transporter = nodemailer.createTransport({
+  service: process.env.SERVICE_EMAIL,
+  auth: {
+    user: process.env.SENDER_EMAIL,
+    pass: process.env.API_KEY_EMAIL,
+  },
+});
+
+const job = schedule.scheduleJob('0 10 * * *', () => {
+  const users = email.returnUsersEmailWithOverdue();
+  users.forEach((user) => {});
+  transporter.sendMail({
+    to: email,
+    from: process.env.SENDER_EMAIL,
+    subject: 'Overdue book reminder',
+    html: email.createEmail(),
+  });
+});
 
 sequelize
   //.sync({ force: true })
