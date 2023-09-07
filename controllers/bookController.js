@@ -7,7 +7,7 @@ const bookController = {
       const books = await Book.findAll();
 
       res.status(200).json({
-        message: 'Fetched posts successfully.',
+        message: 'Fetched books successfully.',
         books: books,
       });
     } catch (err) {
@@ -48,7 +48,7 @@ const bookController = {
     }
   },
   putUpdateBook: async (req, res, next) => {
-    const bookId = req.params.bookId;
+    const bookId = req.body.bookId;
 
     const title = req.body.title;
     const author = req.body.author;
@@ -95,7 +95,7 @@ const bookController = {
     }
   },
   deleteBook: async (req, res, next) => {
-    const bookId = req.params.bookId;
+    const bookId = req.body.bookId;
 
     try {
       const book = await Book.findAll({
