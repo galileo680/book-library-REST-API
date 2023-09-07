@@ -24,7 +24,7 @@ router.post(
 
 // /api/update-book => PUT
 router.put(
-  '/update-book/:bookId',
+  '/update-book',
   isAuth,
   [
     body('title').trim().isLength({ min: 4 }).not().isEmpty(),
@@ -36,6 +36,6 @@ router.put(
 );
 
 // /api/delete-book => DELETE
-router.delete('/delete-book/:bookId', isAuth, bookController.deleteBook);
+router.delete('/delete-book', isAuth, bookController.deleteBook);
 
 module.exports = router;
