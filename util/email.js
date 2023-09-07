@@ -73,6 +73,52 @@ exports.createEmail = (userName, bookTitle, bookAuthor, dueDate) => {
 `;
 };
 
-exports.returnUsersEmailWithOverdue = () => {
-  const currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
+exports.getOverdueBorrowings = async () => {
+  const currentDate = new Date().toISOString();
+
+  try {
+    const overdueBorrowings = await Borrowing.findAll({
+      where: {
+        dueDate: {
+          [Sequelize.Op.lt]: currentDate,
+        },
+        returnedDate: null,
+      },
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'email', 'username'],
+        },
+        {
+          model: Book,
+          attributes: ['title', 'author', 'id'],
+        },
+      ],
+    });
+
+    if (!overdueBorrowings.length) {
+      const error = new Error('No overdue borrowing information found.');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const overdueBorroingsInfo = overdueBorrowings.map((borrowing) => ({
+      UserId: borrowing.User.id,
+      email: borrowing.User.email,
+      username: borrowing.User.username,
+      dueDate: borrowing.dueDate,
+      bookTitle: borrowing.Book.title,
+      bookAuthor: borrowing.Book.author,
+      bookId: borrowing.Book.id,
+    }));
+
+    return overdueBorroingsInfo;
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+      throw err;
+    }
+    console.log(err);
+    throw err;
+  }
 };

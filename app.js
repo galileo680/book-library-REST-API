@@ -45,14 +45,27 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const job = schedule.scheduleJob('0 10 * * *', () => {
-  const users = email.returnUsersEmailWithOverdue();
-  users.forEach((user) => {});
-  transporter.sendMail({
-    to: email,
-    from: process.env.SENDER_EMAIL,
-    subject: 'Overdue book reminder',
-    html: email.createEmail(),
+// Only for development purpose
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+// Notification runs on the first day of every month at midnight
+const job = schedule.scheduleJob('0 0 1 * *', async () => {
+  const overDueBorrowings = await email.getOverdueBorrowings();
+  overDueBorrowings.forEach((borrowing) => {
+    const formattedDueDate = new Date(borrowing.dueDate)
+      .toISOString()
+      .split('T')[0];
+    transporter.sendMail({
+      to: borrowing.email,
+      from: process.env.SENDER_EMAIL,
+      subject: 'Overdue book reminder',
+      html: email.createEmail(
+        borrowing.username,
+        borrowing.bookTitle,
+        borrowing.bookAuthor,
+        formattedDueDate
+      ),
+    });
   });
 });
 
