@@ -9,6 +9,9 @@ This is a RESTful API for managing a book library, allowing users to borrow and 
   <!-- - [Prerequisites](#prerequisites) -->
   - [Installation](#installation)
 - [API Endpoints](#api-endpoints)
+  - [User Endpoints](#user-authorization-endpoints)
+  - [Books Endpoints](#books-endpoints)
+  - [Borrowing Endpoints](#borrowing-endpoints)
 - [Database Models](#database-models)
 - [Authentication](#authentication)
 
@@ -64,22 +67,22 @@ npm start
 
 ### User Authorization Endpoints
 
--POST /auth/signup: Register a new user.
--POST /auth/login: Log in an existing user.
+- POST /auth/signup: Register a new user.
+- POST /auth/login: Log in an existing user.
 
 ### Books Endpoints
 
--GET /api/books: Fetch books.
--POST /api/add-book: Add a new book.
--PUT /api/update-book: Update book.
--DELETE /api/delete-book: Delete book.
+- GET /api/books: Fetch books.
+- POST /api/add-book: Add a new book.
+- PUT /api/update-book: Update book.
+- DELETE /api/delete-book: Delete book.
 
 ### Borrowing Endpoints
 
--POST /api/borrow: Borrow book.
--POST /api/return: Return book.
--GET /api/user-books: Fetch books borrowed by currently logged user.
--GET /api/borrowed-books: Fetch all currently borrowed books.
+- POST /api/borrow: Borrow book.
+- POST /api/return: Return book.
+- GET /api/user-books: Fetch books borrowed by currently logged user.
+- GET /api/borrowed-books: Fetch all currently borrowed books.
 
 ## Authentication
 
